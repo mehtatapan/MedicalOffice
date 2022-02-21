@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Lookup Index";
+}
+<h2>Lookup Values</h2>
+
+<div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="myTabs" role="tablist">
+        <li class="nav-item">
+            <a href="#DefaultPanel" aria-controls="DefaultTab" role="tab" class="nav-link active" name="DefaultTab" data-toggle="tab" aria-selected="false"> </a>
+        </li>
+        <li class="nav-item">
+            <a href="#SpecialtiesPanel" id="SpecialtiesTab" aria-controls="SpecialtiesTab" role="tab" class="nav-link" name="SpecialtiesPanel" data-toggle="tab" aria-selected="false">Specialties</a>
+        </li>
+        <li class="nav-item">
+            <a href="#MedicalTrialsPanel" id="MedicalTrialsTab" aria-controls="MedicalTrialsTab" role="tab" class="nav-link" name="MedicalTrialsPanel" data-toggle="tab" aria-selected="false">Medical Trials</a>
+        </li>
+        <li class="nav-item">
+            <a href="#ConditionsPanel" id="ConditionsTab" aria-controls="ConditionsTab" role="tab" class="nav-link" name="ConditionsPanel" data-toggle="tab" aria-selected="false">Medical Conditions</a>
+        </li>
+        <li class="nav-item">
+            <a href="#AppointmentReasonsPanel" id="AppointmentReasonsTab" aria-controls="AppointmentReasonsTab" role="tab" class="nav-link" name="AppointmentReasonsPanel" data-toggle="tab" aria-selected="false">Reasons for Appointments</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade ml-3 show active" id="DefaultPanel">
+            <br />
+            <h4>
+                Select the lookup value to maintian from the tabs.
+            </h4>
+        </div>
+        <div role="tabpanel" class="tab-pane fade ml-3" id="SpecialtiesPanel" aria-labelledby="Specialties-Panel">
+            <br />
+        </div>
+        <div role="tabpanel" class="tab-pane fade ml-3" id="MedicalTrialsPanel" aria-labelledby="MedicalTrials-Panel">
+            <br />
+        </div>
+        <div role="tabpanel" class="tab-pane fade ml-3" id="ConditionsPanel" aria-labelledby="Conditions-Panel">
+            <br />
+        </div>
+        <div role="tabpanel" class="tab-pane fade ml-3" id="AppointmentReasonsPanel" aria-labelledby="AppointmentReasons-Panel">
+            <br />
+        </div>
+    </div>
+</div>
+<hr />
+<br />
+@section Scripts {
+    <script type="text/javascript">
+        function refreshTab(activeTab) {
+            switch (activeTab) {
+                case 'SpecialtiesPanel': $('#SpecialtiesPanel').load('/Lookups/Specialties');
+                    break;
+                case 'MedicalTrialsPanel': $('#MedicalTrialsPanel').load('/Lookups/MedicalTrials');
+                    break;
+                case 'ConditionsPanel': $('#ConditionsPanel').load('/Lookups/Conditions');
+                    break;
+                case 'AppointmentReasonsPanel': $('#AppointmentReasonsPanel').load('/Lookups/AppointmentReasons');
+                    break;
+                default: break;
+            };
+            return;
+        };
+        $('.nav-link').click( function () {
+            var activeTab = $(this).attr("name");
+            refreshTab(activeTab);
+        });
+        $(".tab-content").on("click",".linkClick", function (event) {
+            event.preventDefault();
+            var address = $(this).attr("href");
+            var lookup = address.split("/")[1];
+            var id = $("#" + lookup + "ID").val();
+            var caption = $("#" + lookup).html();
+            if (id == null) {
+                alert("Error: no value selected from the " + caption + " list!");
+            } else {
+                window.location.href = address + "/" + id;
+            }
+        });
+        $(function () {
+            setTimeout(function () {
+                $("#@ViewData["Tab"]").trigger('click');
+            }, 10);
+        });
+    </script>
+}

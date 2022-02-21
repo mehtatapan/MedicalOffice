@@ -1,0 +1,256 @@
+﻿@model IEnumerable<MedicalOffice.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Patient Appointments";
+    MedicalOffice.Models.Patient patient = (MedicalOffice.Models.Patient)ViewBag.Patient;
+}
+<br />
+<div class="media">
+    <div>
+        @{
+            if (patient.PatientThumbnail?.Content != null)
+            {
+                string imageBase64 = Convert.ToBase64String(patient.PatientThumbnail.Content);
+                string imageSrc = string.Format("data:" + patient.PatientThumbnail.MimeType + ";base64,{0}", imageBase64);
+                <img src="@imageSrc" alt="Profile Picture of @patient.FullName" title="Profile Picture of @patient.FullName" style="max-height: 80px; max-width: 96px" class="img-fluid rounded" />
+            }
+            else
+            {
+                <img src="~/images/blankProfile.jpg" style="max-height: 80px; max-width: 96px" class="img-fluid rounded" />
+            }
+        }
+    </div>
+    <div class="media-body ml-3">
+        <h2><text class="d-none d-sm-inline">Patient: </text>@patient.FullName</h2>
+        <div class="row">
+            <div class="col-sm-6">
+                <dl class="row">
+                    <dt class="col-md-4">
+                        @Html.DisplayNameFor(model => patient.OHIP)
+                    </dt>
+                    <dd class="col-md-8">
+                        @Html.DisplayFor(model => patient.OHIP)
+                    </dd>
+                    <dt class="col-md-4">
+                        @Html.DisplayNameFor(model => patient.LastName)
+                    </dt>
+                    <dd class="col-md-8">
+                        @Html.DisplayFor(model => patient.LastName)
+                    </dd>
+                    <dt class="col-md-4">
+                        First/Middle
+                    </dt>
+                    <dd class="col-md-8">
+                        @Html.DisplayFor(model => patient.FirstName) @Html.DisplayFor(model => patient.MiddleName)
+                    </dd>
+                    <dt class="col-md-4">
+                        @Html.DisplayNameFor(model => patient.AgeSummary)
+                    </dt>
+                    <dd class="col-md-8">
+                        @Html.DisplayFor(model => patient.AgeSummary)
+                    </dd>
+                    <dt class="col-md-4">
+                        @Html.DisplayNameFor(model => patient.ExpYrVisits)
+                    </dt>
+                    <dd class="col-md-8">
+                        @Html.DisplayFor(model => patient.ExpYrVisits)
+                    </dd>
+                </dl>
+            </div>
+            <div class="col-sm-6">
+                <dl class="row">
+                    <dt class="col-md-3">
+                        @Html.DisplayNameFor(model => patient.Phone)
+                    </dt>
+                    <dd class="col-md-9">
+                        @Html.DisplayFor(model => patient.PhoneFormatted)
+                    </dd>
+                    <dt class="col-md-3">
+                        @Html.DisplayNameFor(model => patient.EMail)
+                    </dt>
+                    <dd class="col-md-9">
+                        @Html.DisplayFor(model => patient.EMail)
+                    </dd>
+                    <dt class="col-md-3">
+                        @Html.DisplayNameFor(model => patient.Doctor)
+                    </dt>
+                    <dd class="col-md-9">
+                        @Html.DisplayFor(model => patient.Doctor.FullName)
+                    </dd>
+                    <dt class="col-md-3">
+                        @Html.DisplayNameFor(model => patient.MedicalTrial)
+                    </dt>
+                    <dd class="col-md-9">
+                        @Html.DisplayFor(model => patient.MedicalTrial.TrialName)
+                    </dd>
+                    <dt class="col-sm-3">
+                        @Html.DisplayNameFor(model => patient.PatientConditions)
+                    </dt>
+                    <dd class="col-sm-9">
+                        @{
+                            int condCount = patient.PatientConditions.Count;
+                            if (condCount > 0)
+                            {
+                                string firstCond = patient.PatientConditions.FirstOrDefault().Condition.ConditionName;
+                                if (condCount > 1)
+                                {
+                                    string condList = firstCond;
+                                    var c = patient.PatientConditions.ToList();
+                                    for (int i = 1; i < condCount; i++)
+                                    {
+                                        condList += ", " + c[i].Condition.ConditionName;
+                                    }
+                                    <a tabindex="0" class="" role="button" data-toggle="popover"
+                                       data-trigger="focus" title="Conditions" data-placement="bottom" data-content="@condList">@firstCond...<span class="badge">@condCount</span></a>
+                                }
+                                else
+                                {
+                                    @firstCond
+                                }
+                            }
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<form asp-action="Index" method="get">
+    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <input type="hidden" name="PatientID" value="@patient.ID" />
+
+    <dl class="dl-horizontal">
+        <dt>
+            <button class="btn @(ViewData["Filtering"])" type="button" data-toggle="collapse" id="filterToggle" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+                Filter
+            </button>
+        </dt>
+        <dd>
+            <div class="form-horizontal">
+                <div class="collapse card card-body bg-light" style="padding-top: 10px; padding-bottom: 0px;" id="collapseFilter">
+                    <div class="form-row">
+                        <div class="form-group col-md-4 ml-md-3">
+                            <label class="control-label">Reason:</label>
+                            @Html.DropDownList("AppointmentReasonID", null, "All Reasons", htmlAttributes: new { @class = "form-control" })
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label class="control-label">Search Notes:</label>
+                            @Html.TextBox("SearchString", null, new { @class = "form-control" })
+                        </div>
+                        <div class="form-group col-md-3 align-self-end">
+                            <input type="submit" name="actionButton" value="Apply" class="btn btn-primary" />
+                            <a asp-action="Index" asp-route-PatientID="@patient.ID">Clear</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dd>
+        <dt>
+        </dt>
+        <dd>
+            <div>
+                <table class="table">
+                    <colgroup>
+                        <col span="1" />
+                        <col span="1" />
+                        <col span="1" />
+                        <col span="1" />
+                        <col span="1" width="400" />
+                        <col span="1" />
+                    </colgroup>
+                    <tr>
+                        <th>
+                            <input type="submit" name="actionButton" value="Appointment" class="btn btn-link" />
+                        </th>
+                        <th>
+                            <input type="submit" name="actionButton" value="Appt. Reason" class="btn btn-link" />
+                        </th>
+                        <th>
+                            <input type="submit" name="actionButton" value="Extra Fees" class="btn btn-link" />
+                            @{double totalFees = 0d; }
+                        </th>
+                        <th>
+                            <input type="submit" disabled="disabled" value="Notes" class="btn btn-link" />
+                        </th>
+                        <th>
+                            <a asp-controller="PatientAppt" asp-route-PatientID="@patient.ID" 
+                               asp-route-PatientName="@patient.FullName" asp-action="Add">
+                                <span class="btn btn-success"><strong>&#x271A; Add</strong></span>
+                            </a>
+                        </th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.AppointmentDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.AppointmentReason.ReasonName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ExtraFee)
+                                @{ totalFees += item.ExtraFee;}
+                            </td>
+                            <td>
+                                @{
+                                    string[] noteWords = item.Notes.Split(' ');
+                                    if (noteWords.Count() > 5)
+                                    {
+                                        <a class="" role="button" data-toggle="collapse" href="#collapseSum@(item.ID)" aria-expanded="false" aria-controls="collapseSum@(item.ID)">
+                                            @(string.Join(" ", noteWords.Take(5)) + "...")
+                                        </a>
+                                        <div class="collapse" id="collapseSum@(item.ID)">
+                                            <div class="well">
+                                                @(string.Join(" ", noteWords.Skip(5)))
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @item.Notes
+                                    }
+                                }
+                                @*For help with Bootstrap Collapse see: https://getbootstrap.com/docs/3.3/javascript/#collapse*@
+                            </td>
+                            <td>
+                                <a asp-controller="PatientAppt" asp-action="Update" asp-route-id="@item.ID">
+                                    <span class="btn btn-sm btn-outline-primary">&#x270D;</span>
+                                </a>
+                                <a asp-controller="PatientAppt" asp-action="Remove" asp-route-id="@item.ID">
+                                    <span class="btn btn-sm btn-outline-danger">&#x274C</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td align="right">
+                            Total Fees:
+                        </td>
+                        <td>
+                            <strong>@totalFees.ToString("c")</strong>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </dd>
+    </dl>
+    <partial name="_PagingNavBar" />
+</form>
+<div>
+    <a asp-action="Edit" asp-controller="Patients" asp-route-id="@patient.ID">Edit</a> |
+    <a href='@ViewData["returnURL"]'>Back to Patient List</a>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+}

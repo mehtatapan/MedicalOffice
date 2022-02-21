@@ -1,0 +1,93 @@
+﻿@model MedicalOffice.Models.Doctor
+
+@{
+    ViewData["Title"] = "Doctor Details";
+}
+
+<h2>Doctor Details</h2>
+<div>
+    <h4>@Model.FullName</h4>
+    <hr />
+</div>
+<div>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="myTabs" role="tablist">
+        <li class="nav-item">
+            <a href="#basic" aria-controls="basic" role="tab" class="nav-link active" name="basic" data-toggle="tab" aria-selected="false">Basic Details</a>
+        </li>
+        <li class="nav-item">
+            <a href="#patients" aria-controls="patients" role="tab" class="nav-link" name="patients" data-toggle="tab" aria-selected="false">Patients</a>
+        </li>
+        <li class="nav-item">
+            <a href="#specialities" aria-controls="specialities" role="tab" class="nav-link" name="specialities" data-toggle="tab" aria-selected="false">Specialities</a>
+        </li>
+        <li class="nav-item">
+            <a href="#documents" aria-controls="documents" role="tab" class="nav-link" name="documents" data-toggle="tab" aria-selected="false">Documents</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade ml-3 show active" id="basic">
+            <br />
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.FirstName)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.MiddleName)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.MiddleName)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.LastName)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.LastName)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.City)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.City.CityProvince)
+                </dd>
+            </dl>
+        </div>
+        <div role="tabpanel" class="tab-pane fade ml-3" id="patients" aria-labelledby="patients-tab">
+            <br />
+        </div>
+        <div role="tabpanel" class="tab-pane fade ml-3" id="specialities" aria-labelledby="specialities-tab">
+            <br />
+        </div>
+        <div role="tabpanel" class="tab-pane fade ml-3" id="documents" aria-labelledby="documents-tab">
+            <br />
+        </div>
+    </div>
+</div>
+<hr />
+<br />
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
+    <a href='@ViewData["returnURL"]'>Back to List of Doctors</a>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+            $('.nav-link').click(function () {
+                var activeTab = $(this).attr("name");
+                switch (activeTab) {
+                    case 'patients':$('#patients').load('/Doctors/ListOfPatientsDetails/@Model.ID');
+                        break;
+                    case 'specialities': $('#specialities').load('/Doctors/ListOfSpecialtiesDetails/@Model.ID');
+                        break;
+                    case 'documents': $('#documents').load('/Doctors/ListOfDocumentsDetails/@Model.ID');
+                        break;
+                    default: break;
+                };
+            })
+    </script>
+}

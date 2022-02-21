@@ -1,0 +1,33 @@
+﻿@model MedicalOffice.Models.MedicalTrial
+
+@{
+    ViewData["Title"] = "Create Medical Trial";
+}
+
+<h1>Create Medical Trial</h1>
+
+<hr />
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-md-4">
+
+            <div class="form-group">
+                <label asp-for="TrialName" class="control-label"></label>
+                <textarea asp-for="TrialName" class="form-control"></textarea>
+                <span asp-validation-for="TrialName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index" asp-controller="Lookups" asp-route-Tab="MedicalTrialsTab">Back to Lookup List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

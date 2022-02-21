@@ -1,0 +1,118 @@
+﻿@model MedicalOffice.Models.Doctor
+
+@{
+    ViewData["Title"] = "Edit Doctor";
+}
+
+<h2>Edit Doctor</h2>
+
+<hr />
+<form asp-action="Edit" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-md-4">
+            <input type="hidden" asp-for="ID" />
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MiddleName" class="control-label"></label>
+                <input asp-for="MiddleName" class="form-control" />
+                <span asp-validation-for="MiddleName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Province:</label>
+                <select class="form-control" id="ProvinceID" name="ProvinceID" asp-items="ViewBag.ProvinceID">
+                    <option value="">All Provinces</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label id="CityIDLabel" class=" control-label">City:</label>
+                <select asp-for="CityID" class="form-control" asp-items="ViewBag.CityID"></select>
+                <span asp-validation-for="CityID" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label"> Current Documents:</label>
+                <div class="ml-md-3">
+                    @{
+                        int fileCount = Model.DoctorDocuments.Count;
+                        if (fileCount > 0)
+                        {
+                            var firstFile = Model.DoctorDocuments.FirstOrDefault(); ;
+                            if (fileCount > 1)
+                            {
+                                <a class="" role="button" data-toggle="collapse" href="#collapseSum@(Model.ID)" aria-expanded="false" aria-controls="collapseSum@(Model.ID)">
+                                    <span class="badge badge-info">@fileCount</span> Current Documents...
+                                </a>
+                                <div class="collapse" id="collapseSum@(Model.ID)">
+                                    @{
+                                        foreach (var d in Model.DoctorDocuments)
+                                        {
+                                            <a asp-action="Download" asp-route-id="@d.ID">@d.FileName</a> <br />
+                                        }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <a asp-action="Download" asp-route-id="@firstFile.ID">@firstFile.FileName</a>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Upload Additional Documents:</label>
+                <input type="file" class="" name="theFiles" multiple="multiple" />
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label class="control-label"> Specialties Accredited</label> <button type="button" id="btnRight" class="btn btn-danger btn-sm">
+                        <strong>-</strong>
+                    </button>
+                    @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.selOpts, new { @size = 10, @class = "form-control" })
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label class="control-label"> Choose Specialties</label> <button type="button" id="btnLeft" class="btn btn-success btn-sm">
+                        <strong>+</strong>
+                    </button>
+                    @Html.ListBox("availOptions", (MultiSelectList)ViewBag.availOpts, new { @size = 10, @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="submit" id="btnSubmit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+<div>
+    <a asp-action="Index">Back to List of Doctors</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/multiselect.js"></script>
+    <script src="~/js/refreshDDL.js"></script>
+    <script type="text/javascript">
+        $('#ProvinceID').change(function () {
+            var selectedProvince = $("#ProvinceID").val();
+            var URL = "/Doctors/GetCities/" + selectedProvince;
+            refreshDDL('CityID', URL, true,"No Cities to choose from");
+        });
+    </script>
+}
